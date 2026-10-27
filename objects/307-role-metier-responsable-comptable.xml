@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<role oid="e3000000-0000-0000-0000-000000000007"
+      xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Responsable comptable</name>
+    <description>Responsable du service comptable : facturation et administration de la facturation.</description>
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000321" type="ArchetypeType"/>
+    </assignment>
+    <inducement>
+        <targetRef oid="e2000000-0000-0000-0000-000000000005" type="RoleType"/>  <!-- Odoo - Facturation -->
+    </inducement>
+    <inducement>
+        <targetRef oid="e2000000-0000-0000-0000-000000000007" type="RoleType"/>  <!-- Odoo - Facturation : administrateur -->
+    </inducement>
+    <requestable>true</requestable>
+</role>
