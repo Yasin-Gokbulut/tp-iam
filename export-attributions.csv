@@ -1,0 +1,41 @@
+utilisateur,nom_complet,role
+aanderso,Alice Anderson,Direction
+aanderso,Alice Anderson,Employé
+administrator,midPoint Administrator,Superuser
+bbrown,Bob Brown,Employé
+bmartin,Bruno Martin,Comptable back-office
+bmartin,Bruno Martin,Employé
+ccooper,Carol Cooper,Employé
+ddavies,David Davies,Employé
+eevans,Erin Evans,Employé
+ffox,Frank Fox,Employé
+ggreen,George Green,Employé
+hharris,Harry Harris,Comptable back-office
+hharris,Harry Harris,Employé
+iirvine,Isabella Irvine,Agent commercial
+iirvine,Isabella Irvine,Employé
+iirvine,Isabella Irvine,Manager commercial
+jjones,Jack Jones,Agent commercial
+jjones,Jack Jones,Employé
+kknowles,Kate Knowles,Employé
+llewis,Lily Lewis,Direction
+llewis,Lily Lewis,Employé
+mmorgan,Max Morgan,Direction
+mmorgan,Max Morgan,Employé
+nnewman,Nathan Newman,Employé
+oowen,Oliver Owen,Employé
+pphillip,Peter Phillips,Employé
+qquinn,Quentin Quinn,Employé
+rrussell,Roger Russell,Employé
+ssimpson,Sophia Simpson,Direction
+ssimpson,Sophia Simpson,Employé
+tturner,Thomas Turner,Agent commercial
+tturner,Thomas Turner,Employé
+tturner,Thomas Turner,Manager commercial
+uunderhi,Uma Underhill,Employé
+vvickers,Violet Vickers,Comptable back-office
+vvickers,Violet Vickers,Employé
+wwalker,William Walker,Employé
+xxanadu,Xenia Xanadu,Employé
+yyoung,Yasmine Young,Employé
+zzimmerm,Zed Zimmerman,Employé
