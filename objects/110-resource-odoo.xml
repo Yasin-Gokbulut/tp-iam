@@ -21,14 +21,14 @@
     <!-- 1. Connecteur Odoo déposé dans connid-connectors -->
     <connectorRef type="ConnectorType">
         <filter>
-            <q:text>connectorType = "eu.cognitum.identityconnectors.odoo.OdooConnector"</q:text>
+            <q:text>connectorType = "lu.lns.connector.odoo.OdooConnector"</q:text>
         </filter>
     </connectorRef>
 
     <!-- 2. Connexion XML-RPC à Odoo (À_ADAPTER : namespace et noms exacts des propriétés) -->
     <connectorConfiguration>
         <icfc:configurationProperties
-                xmlns:odoo="urn:A_ADAPTER:namespace-du-connecteur-odoo">
+                xmlns:odoo="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/lu.lns.connector.odoo/lu.lns.connector.odoo.OdooConnector">
             <odoo:url>http://odoo:8069</odoo:url>
             <odoo:database>odoo_demo</odoo:database>
             <odoo:username>admin</odoo:username>
