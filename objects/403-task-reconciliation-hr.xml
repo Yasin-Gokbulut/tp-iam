@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task oid="e4000000-0000-0000-0000-000000000003"
+      xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Réconciliation nocturne RH (CSV)</name>
+    <description>Compare chaque nuit le CSV complet et midPoint (filet de sécurité).</description>
+    <!-- Archétype de tâche : Reconciliation task -->
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000501" type="ArchetypeType"/>
+    </assignment>
+    <ownerRef oid="00000000-0000-0000-0000-000000000002" type="UserType"/>  <!-- administrator -->
+    <executionState>suspended</executionState>
+    <schedule>
+        <cronLikePattern>0 0 2 * * ?</cronLikePattern>  <!-- tous les jours à 02:00 -->
+        <misfireAction>executeImmediately</misfireAction>
+    </schedule>
+    <activity>
+        <work>
+            <reconciliation>
+                <resourceObjects>
+                    <resourceRef oid="e1000000-0000-0000-0000-000000000001" type="ResourceType"/>
+                    <kind>account</kind>
+                    <intent>default</intent>
+                </resourceObjects>
+            </reconciliation>
+        </work>
+    </activity>
+</task>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task oid="e4000000-0000-0000-0000-000000000004"
+      xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Réconciliation nocturne Odoo</name>
+    <description>Compare chaque nuit les comptes Odoo réels avec l'état attendu (rôles) et corrige les écarts.</description>
+    <!-- Archétype de tâche : Reconciliation task -->
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000501" type="ArchetypeType"/>
+    </assignment>
+    <ownerRef oid="00000000-0000-0000-0000-000000000002" type="UserType"/>  <!-- administrator -->
+    <executionState>suspended</executionState>
+    <schedule>
+        <cronLikePattern>0 30 2 * * ?</cronLikePattern>  <!-- tous les jours à 02:30 -->
+        <misfireAction>executeImmediately</misfireAction>
+    </schedule>
+    <activity>
+        <work>
+            <reconciliation>
+                <resourceObjects>
+                    <resourceRef oid="e1000000-0000-0000-0000-000000000002" type="ResourceType"/>
+                    <kind>account</kind>
+                    <intent>default</intent>
+                </resourceObjects>
+            </reconciliation>
+        </work>
+    </activity>
+</task>

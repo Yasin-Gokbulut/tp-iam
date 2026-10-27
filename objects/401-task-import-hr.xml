@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task oid="e4000000-0000-0000-0000-000000000001"
+      xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Import initial RH (CSV)</name>
+    <description>Import unique de toutes les lignes du CSV RH.</description>
+    <!-- Archétype de tâche : Import task -->
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000503" type="ArchetypeType"/>
+    </assignment>
+    <ownerRef oid="00000000-0000-0000-0000-000000000002" type="UserType"/>  <!-- administrator -->
+    <executionState>runnable</executionState>
+    <activity>
+        <work>
+            <import>
+                <resourceObjects>
+                    <resourceRef oid="e1000000-0000-0000-0000-000000000001" type="ResourceType"/>
+                    <kind>account</kind>
+                    <intent>default</intent>
+                </resourceObjects>
+            </import>
+        </work>
+    </activity>
+</task>

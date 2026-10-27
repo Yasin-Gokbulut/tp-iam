@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resource oid="e1000000-0000-0000-0000-000000000001"
+          xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+          xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+          xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3"
+          xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+
+    <name>RH - Export CSV</name>
+    <description>Source autoritaire des identités : export CSV de la base de démonstration midPoint (ExAmPLE, Inc.).</description>
+
+    <!-- 1. Quel connecteur ? Référence dynamique, résolue en OID à l'import -->
+    <connectorRef type="ConnectorType">
+        <filter>
+            <q:text>connectorType = "com.evolveum.polygon.connector.csv.CsvConnector"</q:text>
+        </filter>
+    </connectorRef>
+
+    <!-- 2. Paramètres du connecteur CSV -->
+    <connectorConfiguration>
+        <icfc:configurationProperties
+                xmlns:csv="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.evolveum.polygon.connector-csv/com.evolveum.polygon.connector.csv.CsvConnector">
+            <csv:filePath>/opt/midpoint/var/hr/hr.csv</csv:filePath>
+            <csv:encoding>utf-8</csv:encoding>
+            <csv:fieldDelimiter>,</csv:fieldDelimiter>
+            <csv:quote>"</csv:quote>
+            <csv:multivalueDelimiter>;</csv:multivalueDelimiter>
+            <csv:uniqueAttribute>empno</csv:uniqueAttribute>
+        </icfc:configurationProperties>
+    </connectorConfiguration>
+
+    <!-- 3. Comment interpréter les lignes du CSV -->
+    <schemaHandling>
+        <objectType>
+            <kind>account</kind>
+            <intent>default</intent>
+            <displayName>Employé RH</displayName>
+            <default>true</default>
+            <delineation>
+                <objectClass>ri:AccountObjectClass</objectClass>
+            </delineation>
+            <focus>
+                <type>UserType</type>
+                <!-- Tout utilisateur créé depuis le CSV reçoit l'archétype Employé -->
+                <archetypeRef oid="e0000000-0000-0000-0000-000000000001"/>
+            </focus>
+
+            <!-- 3a. Mappings entrants (inbound) : CSV -> utilisateur midPoint -->
+            <attribute>
+                <ref>ri:empno</ref>
+                <displayName>Matricule</displayName>
+                <inbound>
+                    <name>empno-vers-personalNumber</name>
+                    <strength>strong</strength>
+                    <target><path>personalNumber</path></target>
+                </inbound>
+            </attribute>
+            <attribute>
+                <ref>ri:firstname</ref>
+                <displayName>Prénom</displayName>
+                <inbound>
+                    <name>firstname-vers-givenName</name>
+                    <strength>strong</strength>
+                    <target><path>givenName</path></target>
+                </inbound>
+            </attribute>
+            <attribute>
+                <ref>ri:lastname</ref>
+                <displayName>Nom</displayName>
+                <inbound>
+                    <name>lastname-vers-familyName</name>
+                    <strength>strong</strength>
+                    <target><path>familyName</path></target>
+                </inbound>
+            </attribute>
+            <attribute>
+                <ref>ri:jobcode</ref>
+                <displayName>Code métier</displayName>
+                <inbound>
+                    <name>jobcode-vers-extension</name>
+                    <strength>strong</strength>
+                    <target><path>extension/jobCode</path></target>
+                </inbound>
+            </attribute>
+            <attribute>
+                <ref>ri:orgnum</ref>
+                <displayName>Numéro d'organisation</displayName>
+                <inbound>
+                    <name>orgnum-vers-extension</name>
+                    <strength>strong</strength>
+                    <target><path>extension/orgNum</path></target>
+                </inbound>
+                <inbound>
+                    <name>orgnum-vers-organizationalUnit</name>
+                    <strength>strong</strength>
+                    <target><path>organizationalUnit</path></target>
+                </inbound>
+            </attribute>
+
+            <!-- 3b. Mot de passe initial généré (weak : seulement s'il est vide) -->
+            <credentials>
+                <password>
+                    <inbound>
+                        <strength>weak</strength>
+                        <expression>
+                            <generate/>
+                        </expression>
+                    </inbound>
+                </password>
+            </credentials>
+
+            <!-- 4. Corrélation : à quel utilisateur existant appartient cette ligne ? -->
+            <correlation>
+                <correlators>
+                    <items>
+                        <name>correlation-matricule</name>
+                        <item>
+                            <ref>personalNumber</ref>
+                        </item>
+                    </items>
+                </correlators>
+            </correlation>
+
+            <!-- 5. Réactions de synchronisation selon la situation -->
+            <synchronization>
+                <reaction>
+                    <name>nouvel-employe</name>
+                    <situation>unmatched</situation>
+                    <actions><addFocus/></actions>
+                </reaction>
+                <reaction>
+                    <name>employe-connu-non-lie</name>
+                    <situation>unlinked</situation>
+                    <actions><link/></actions>
+                </reaction>
+                <reaction>
+                    <name>employe-lie</name>
+                    <situation>linked</situation>
+                    <actions><synchronize/></actions>
+                </reaction>
+                <reaction>
+                    <name>depart-employe</name>
+                    <situation>deleted</situation>
+                    <actions><inactivateFocus/></actions>
+                </reaction>
+            </synchronization>
+        </objectType>
+    </schemaHandling>
+
+    <!-- 6. Ressource source : midPoint ne doit jamais écrire dans le CSV RH -->
+    <capabilities>
+        <configured>
+            <cap:create><cap:enabled>false</cap:enabled></cap:create>
+            <cap:update><cap:enabled>false</cap:enabled></cap:update>
+            <cap:delete><cap:enabled>false</cap:enabled></cap:delete>
+        </configured>
+    </capabilities>
+
+    <projection>
+        <assignmentPolicyEnforcement>none</assignmentPolicyEnforcement>
+    </projection>
+</resource>

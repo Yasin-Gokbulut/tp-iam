@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<role oid="e2000000-0000-0000-0000-000000000001"
+      xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+      xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">
+    <name>Odoo - Utilisateur interne</name>
+    <description>Accès de base à Odoo (consultation de sa fiche employé, discussions). Groupe(s) Odoo : base.group_user.</description>
+    <!-- Archétype "Application role" (rôle technique lié à une application) -->
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000328" type="ArchetypeType"/>
+    </assignment>
+    <!-- Le droit : un compte Odoo portant le(s) groupe(s) ci-dessous -->
+    <inducement>
+        <construction>
+            <resourceRef oid="e1000000-0000-0000-0000-000000000002" type="ResourceType"/>
+            <kind>account</kind>
+            <intent>default</intent>
+            <attribute>
+                <ref>ri:groups_id</ref>
+                <outbound>
+                    <strength>strong</strength>
+                    <expression>
+                        <value>__GID_USER__</value>  <!-- base.group_user -->
+                    </expression>
+                </outbound>
+            </attribute>
+        </construction>
+    </inducement>
+    <requestable>true</requestable>
+</role>

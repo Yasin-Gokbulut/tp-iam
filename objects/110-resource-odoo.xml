@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Ressource cible Odoo (connecteur XML-RPC "Odoo Connector", Cognitum / LNS).
+  IMPORTANT : la section <connectorConfiguration> dépend de la version du connecteur.
+  Créez d'abord la connexion avec l'assistant (Ressources > Nouvelle ressource), puis
+  relevez dans l'onglet XML le namespace et les noms de propriétés réellement générés
+  et reportez-les ici (repères À_ADAPTER). Les sections schemaHandling et capabilities,
+  elles, s'utilisent telles quelles après vérification des noms dans l'onglet Schéma.
+-->
+<resource oid="e1000000-0000-0000-0000-000000000002"
+          xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+          xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+          xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+          xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3"
+          xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3">
+
+    <name>Odoo ERP</name>
+    <description>Système cible : comptes utilisateurs Odoo (res.users) et groupes de droits (res.groups).</description>
+
+    <!-- 1. Connecteur Odoo déposé dans connid-connectors -->
+    <connectorRef type="ConnectorType">
+        <filter>
+            <q:text>connectorType = "eu.cognitum.identityconnectors.odoo.OdooConnector"</q:text>
+        </filter>
+    </connectorRef>
+
+    <!-- 2. Connexion XML-RPC à Odoo (À_ADAPTER : namespace et noms exacts des propriétés) -->
+    <connectorConfiguration>
+        <icfc:configurationProperties
+                xmlns:odoo="urn:A_ADAPTER:namespace-du-connecteur-odoo">
+            <odoo:url>http://odoo:8069</odoo:url>
+            <odoo:database>odoo_demo</odoo:database>
+            <odoo:username>admin</odoo:username>
+            <odoo:password><t:clearValue>admin</t:clearValue></odoo:password>
+        </icfc:configurationProperties>
+    </connectorConfiguration>
+
+    <!-- 3. Limiter la découverte du schéma aux modèles utiles -->
+    <schema>
+        <generationConstraints>
+            <generateObjectClass>ri:res.users</generateObjectClass>
+            <generateObjectClass>ri:res.groups</generateObjectClass>
+        </generationConstraints>
+    </schema>
+
+    <schemaHandling>
+        <!-- 4. Type d'objet "compte Odoo" -->
+        <objectType>
+            <kind>account</kind>
+            <intent>default</intent>
+            <displayName>Compte Odoo</displayName>
+            <default>true</default>
+            <delineation>
+                <objectClass>ri:res.users</objectClass>
+            </delineation>
+            <focus>
+                <type>UserType</type>
+            </focus>
+
+            <!-- 4a. Mappings sortants (outbound) : utilisateur midPoint -> Odoo -->
+            <attribute>
+                <ref>ri:login</ref>
+                <displayName>Identifiant Odoo</displayName>
+                <outbound>
+                    <name>email-vers-login</name>
+                    <strength>strong</strength>
+                    <source><path>emailAddress</path></source>
+                </outbound>
+                <!-- Utilisé uniquement pour la corrélation des comptes existants -->
+                <inbound>
+                    <name>login-pour-correlation</name>
+                    <target><path>emailAddress</path></target>
+                    <use>correlation</use>
+                </inbound>
+            </attribute>
+            <attribute>
+                <ref>ri:name</ref>
+                <displayName>Nom affiché</displayName>
+                <outbound>
+                    <name>fullName-vers-name</name>
+                    <strength>strong</strength>
+                    <source><path>fullName</path></source>
+                </outbound>
+            </attribute>
+            <attribute>
+                <ref>ri:email</ref>
+                <outbound>
+                    <name>email-vers-email</name>
+                    <source><path>emailAddress</path></source>
+                </outbound>
+            </attribute>
+            <!-- Groupes Odoo : alimentés UNIQUEMENT par les rôles (inducements) -->
+            <attribute>
+                <ref>ri:groups_id</ref>
+                <displayName>Groupes Odoo</displayName>
+                <tolerant>true</tolerant>
+            </attribute>
+
+            <!-- 4b. Comptes techniques Odoo que midPoint ne doit jamais toucher -->
+            <protected>
+                <filter>
+                    <q:text>attributes/login = "admin"</q:text>
+                </filter>
+            </protected>
+            <protected>
+                <filter>
+                    <q:text>attributes/login = "demo"</q:text>
+                </filter>
+            </protected>
+            <protected>
+                <filter>
+                    <q:text>attributes/login = "portal"</q:text>
+                </filter>
+            </protected>
+
+            <!-- 4c. Activation : "désactiver au lieu de supprimer".
+                 Un compte qui n'est plus justifié par un rôle (legal = false) ou dont
+                 l'utilisateur est désactivé est archivé (active = false), jamais supprimé. -->
+            <activation>
+                <existence>
+                    <outbound>
+                        <strength>weak</strength>
+                        <expression>
+                            <path>$focusExists</path>
+                        </expression>
+                    </outbound>
+                </existence>
+                <administrativeStatus>
+                    <outbound>
+                        <strength>strong</strength>
+                        <expression>
+                            <script>
+                                <code>
+                                    import com.evolveum.midpoint.xml.ns._public.common.common_3.ActivationStatusType
+                                    legal ? input : ActivationStatusType.DISABLED
+                                </code>
+                            </script>
+                        </expression>
+                    </outbound>
+                </administrativeStatus>
+            </activation>
+
+            <!-- 4d. Mot de passe : propagé depuis midPoint -->
+            <credentials>
+                <password>
+                    <outbound/>
+                </password>
+            </credentials>
+
+            <!-- 5. Corrélation des comptes Odoo existants avec les utilisateurs -->
+            <correlation>
+                <correlators>
+                    <items>
+                        <name>correlation-email</name>
+                        <item>
+                            <ref>emailAddress</ref>
+                        </item>
+                    </items>
+                </correlators>
+            </correlation>
+
+            <!-- 6. Réactions lors des réconciliations Odoo -->
+            <synchronization>
+                <reaction>
+                    <name>compte-lie</name>
+                    <situation>linked</situation>
+                    <actions><synchronize/></actions>
+                </reaction>
+                <reaction>
+                    <name>compte-existant-a-lier</name>
+                    <situation>unlinked</situation>
+                    <actions><link/></actions>
+                </reaction>
+                <reaction>
+                    <name>compte-supprime-dans-odoo</name>
+                    <situation>deleted</situation>
+                    <actions><synchronize/></actions>
+                </reaction>
+                <!-- unmatched : aucune réaction => les comptes orphelins sont seulement signalés -->
+            </synchronization>
+        </objectType>
+    </schemaHandling>
+
+    <!-- 7. Activation simulée sur le champ booléen "active" de res.users -->
+    <capabilities>
+        <configured>
+            <cap:activation>
+                <cap:status>
+                    <cap:attribute>ri:active</cap:attribute>
+                    <cap:enableValue>true</cap:enableValue>
+                    <cap:disableValue>false</cap:disableValue>
+                </cap:status>
+            </cap:activation>
+        </configured>
+    </capabilities>
+</resource>

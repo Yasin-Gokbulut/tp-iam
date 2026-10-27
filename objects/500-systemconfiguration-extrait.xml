@@ -1,0 +1,6 @@
+<!-- EXTRAIT à ajouter dans l'objet System Configuration existant
+     (Configuration > Système > Gestion des rôles, ou éditeur XML de l'objet).
+     NE PAS importer ce fichier tel quel : il écraserait la configuration système. -->
+<roleManagement xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <autoassignEnabled>true</autoassignEnabled>
+</roleManagement>

@@ -1,0 +1,107 @@
+# TP IAM - midPoint + Odoo (base de démonstration)
+# Basé sur le docker-compose officiel Evolveum (github.com/Evolveum/midpoint-docker)
+name: tp-iam
+
+services:
+
+  # ---------- Base de données (dépôt) de midPoint ----------
+  midpoint_data:
+    image: postgres:16-alpine
+    container_name: tp-midpoint-db
+    environment:
+      - POSTGRES_PASSWORD=db.secret.pw.007
+      - POSTGRES_USER=midpoint
+      - POSTGRES_INITDB_ARGS=--lc-collate=en_US.utf8 --lc-ctype=en_US.utf8
+    networks: [net]
+    volumes:
+      - midpoint_data:/var/lib/postgresql/data
+
+  # ---------- Initialisation du dépôt natif (exécutée une fois) ----------
+  data_init:
+    image: evolveum/midpoint:${MP_VER:-latest}-alpine
+    command: >
+      bash -c "
+      cd /opt/midpoint ;
+      bin/midpoint.sh init-native ;
+      bin/ninja.sh -B info >/dev/null 2>/tmp/ninja.log ;
+      grep -q \"ERROR\" /tmp/ninja.log && (
+      bin/ninja.sh run-sql --create --mode REPOSITORY ;
+      bin/ninja.sh run-sql --create --mode AUDIT
+      ) || echo 'Repository init is not needed...' ;
+      "
+    depends_on: [midpoint_data]
+    environment:
+      - MP_SET_midpoint_repository_jdbcUsername=midpoint
+      - MP_SET_midpoint_repository_jdbcPassword=db.secret.pw.007
+      - MP_SET_midpoint_repository_jdbcUrl=jdbc:postgresql://midpoint_data:5432/midpoint
+      - MP_SET_midpoint_repository_database=postgresql
+      - MP_INIT_CFG=/opt/midpoint/var
+    networks: [net]
+    volumes:
+      - midpoint_home:/opt/midpoint/var
+
+  # ---------- Serveur midPoint ----------
+  midpoint_server:
+    image: evolveum/midpoint:${MP_VER:-latest}-alpine
+    container_name: tp-midpoint
+    depends_on:
+      data_init:
+        condition: service_completed_successfully
+      midpoint_data:
+        condition: service_started
+    command: ["/opt/midpoint/bin/midpoint.sh", "container"]
+    ports:
+      - "8080:8080"
+    environment:
+      - MP_SET_midpoint_repository_jdbcUsername=midpoint
+      - MP_SET_midpoint_repository_jdbcPassword=db.secret.pw.007
+      - MP_SET_midpoint_repository_jdbcUrl=jdbc:postgresql://midpoint_data:5432/midpoint
+      - MP_SET_midpoint_repository_database=postgresql
+      - MP_SET_midpoint_administrator_initialPassword=Test5ecr3t
+      - MP_UNSET_midpoint_repository_hibernateHbm2ddl=1
+      - MP_NO_ENV_COMPAT=1
+      # Copie init/midpoint/<dossier>/* vers /opt/midpoint/var/<dossier>/ au démarrage
+      - MP_ENTRY_POINT=/opt/midpoint-dirs-docker-entrypoint
+    networks: [net]
+    volumes:
+      - midpoint_home:/opt/midpoint/var
+      - ./init/midpoint:/opt/midpoint-dirs-docker-entrypoint:ro
+      # Dossier d'échange RH : le fichier CSV déposé ici est lu par le connecteur CSV
+      - ./hr:/opt/midpoint/var/hr
+
+  # ---------- Base de données d'Odoo ----------
+  odoo_db:
+    image: postgres:15
+    container_name: tp-odoo-db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+    networks: [net]
+    volumes:
+      - odoo_db_data:/var/lib/postgresql/data
+
+  # ---------- ERP Odoo (système cible) ----------
+  odoo:
+    image: odoo:17.0
+    container_name: tp-odoo
+    depends_on: [odoo_db]
+    environment:
+      - HOST=odoo_db
+      - USER=odoo
+      - PASSWORD=odoo
+    ports:
+      - "8069:8069"
+    networks: [net]
+    volumes:
+      - odoo_data:/var/lib/odoo
+
+networks:
+  net:
+    driver: bridge
+
+volumes:
+  midpoint_data:
+  midpoint_home:
+  odoo_db_data:
+  odoo_data:

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objectTemplate oid="e0000000-0000-0000-0000-000000000002"
+                xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Modèle Employé</name>
+    <description>Calcule l'identifiant, le nom complet et l'e-mail des employés.</description>
+
+    <!-- En cas de doublon d'identifiant : aanderso, aanderso2, aanderso3... -->
+    <iterationSpecification>
+        <maxIterations>99</maxIterations>
+        <tokenExpression>
+            <script>
+                <code>iteration == 0 ? "" : (iteration + 1).toString()</code>
+            </script>
+        </tokenExpression>
+    </iterationSpecification>
+
+    <!-- Identifiant (name) = initiale du prénom + nom, 8 caractères max -->
+    <item>
+        <ref>name</ref>
+        <mapping>
+            <name>generer-identifiant</name>
+            <strength>weak</strength>
+            <source><path>givenName</path></source>
+            <source><path>familyName</path></source>
+            <expression>
+                <script>
+                    <code>
+                        def p = basic.norm(basic.stringify(givenName))?.replaceAll(' ', '')
+                        def n = basic.norm(basic.stringify(familyName))?.replaceAll(' ', '')
+                        return (p?.take(1) + n)?.take(8) + iterationToken
+                    </code>
+                </script>
+            </expression>
+        </mapping>
+    </item>
+
+    <!-- Nom complet, recalculé à chaque changement (strong) -->
+    <item>
+        <ref>fullName</ref>
+        <mapping>
+            <name>generer-nom-complet</name>
+            <strength>strong</strength>
+            <source><path>givenName</path></source>
+            <source><path>familyName</path></source>
+            <expression>
+                <script>
+                    <code>basic.concatName(givenName, familyName)</code>
+                </script>
+            </expression>
+        </mapping>
+    </item>
+
+    <!-- Adresse e-mail prenom.nom@example.com (sert de login Odoo) -->
+    <item>
+        <ref>emailAddress</ref>
+        <mapping>
+            <name>generer-email</name>
+            <strength>weak</strength>
+            <source><path>givenName</path></source>
+            <source><path>familyName</path></source>
+            <expression>
+                <script>
+                    <code>
+                        if (givenName == null || familyName == null) { return null }
+                        return basic.norm(basic.stringify(givenName)).replaceAll(' ', '') + '.' +
+                               basic.norm(basic.stringify(familyName)).replaceAll(' ', '') +
+                               iterationToken + '@example.com'
+                    </code>
+                </script>
+            </expression>
+        </mapping>
+    </item>
+</objectTemplate>

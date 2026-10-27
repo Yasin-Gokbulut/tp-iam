@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<role oid="e3000000-0000-0000-0000-000000000002"
+      xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Agent commercial</name>
+    <description>Commerciaux des départements Ventes directes (11100) et indirectes (11200) : module CRM.</description>
+    <!-- Archétype "Business role" (rôle métier) -->
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000321" type="ArchetypeType"/>
+    </assignment>
+    <!-- Droits portés par le rôle métier = rôles applicatifs induits -->
+    <inducement>
+        <targetRef oid="e2000000-0000-0000-0000-000000000002" type="RoleType"/>  <!-- Odoo - CRM : commercial -->
+    </inducement>
+    <!-- Règle ABAC : attribution / retrait automatique (orgNum = 11100 ou 11200) -->
+    <autoassign>
+        <enabled>true</enabled>
+        <focus>
+            <selector>
+                <type>UserType</type>
+            </selector>
+            <mapping>
+                <name>auto-agent-commercial</name>
+                <strength>strong</strength>
+                <source>
+                    <path>extension/orgNum</path>
+                </source>
+                <condition>
+                    <script>
+                        <code>orgNum in ['11100', '11200']</code>
+                    </script>
+                </condition>
+            </mapping>
+        </focus>
+    </autoassign>
+    <requestable>true</requestable>
+</role>

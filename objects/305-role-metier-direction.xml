@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<role oid="e3000000-0000-0000-0000-000000000005"
+      xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Direction</name>
+    <description>Membres de la direction (codes métier B0xx) : accès au module RH.</description>
+    <!-- Archétype "Business role" (rôle métier) -->
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000321" type="ArchetypeType"/>
+    </assignment>
+    <!-- Droits portés par le rôle métier = rôles applicatifs induits -->
+    <inducement>
+        <targetRef oid="e2000000-0000-0000-0000-000000000004" type="RoleType"/>  <!-- Odoo - RH : agent -->
+    </inducement>
+    <!-- Règle ABAC : attribution / retrait automatique (jobCode commence par B) -->
+    <autoassign>
+        <enabled>true</enabled>
+        <focus>
+            <selector>
+                <type>UserType</type>
+            </selector>
+            <mapping>
+                <name>auto-direction</name>
+                <strength>strong</strength>
+                <source>
+                    <path>extension/jobCode</path>
+                </source>
+                <condition>
+                    <script>
+                        <code>jobCode?.startsWith('B')</code>
+                    </script>
+                </condition>
+            </mapping>
+        </focus>
+    </autoassign>
+    <requestable>true</requestable>
+</role>

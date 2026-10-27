@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task oid="e4000000-0000-0000-0000-000000000002"
+      xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Synchronisation continue RH (CSV)</name>
+    <description>Détecte toutes les 60 s les lignes ajoutées, modifiées ou supprimées du CSV.</description>
+    <!-- Archétype de tâche : Live synchronization task -->
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000504" type="ArchetypeType"/>
+    </assignment>
+    <ownerRef oid="00000000-0000-0000-0000-000000000002" type="UserType"/>  <!-- administrator -->
+    <executionState>suspended</executionState>
+    <schedule>
+        <interval>60</interval>  <!-- secondes -->
+    </schedule>
+    <activity>
+        <work>
+            <liveSynchronization>
+                <resourceObjects>
+                    <resourceRef oid="e1000000-0000-0000-0000-000000000001" type="ResourceType"/>
+                    <kind>account</kind>
+                    <intent>default</intent>
+                </resourceObjects>
+            </liveSynchronization>
+        </work>
+    </activity>
+</task>

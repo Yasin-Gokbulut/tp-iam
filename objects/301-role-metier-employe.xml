@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<role oid="e3000000-0000-0000-0000-000000000001"
+      xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Employé</name>
+    <description>Tout salarié présent dans l'export RH : accès de base à Odoo.</description>
+    <!-- Archétype "Business role" (rôle métier) -->
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000321" type="ArchetypeType"/>
+    </assignment>
+    <!-- Droits portés par le rôle métier = rôles applicatifs induits -->
+    <inducement>
+        <targetRef oid="e2000000-0000-0000-0000-000000000001" type="RoleType"/>  <!-- Odoo - Utilisateur interne -->
+    </inducement>
+    <!-- Règle ABAC : attribution / retrait automatique (Tout utilisateur possédant un matricule RH) -->
+    <autoassign>
+        <enabled>true</enabled>
+        <focus>
+            <selector>
+                <type>UserType</type>
+            </selector>
+            <mapping>
+                <name>auto-employe</name>
+                <strength>strong</strength>
+                <source>
+                    <path>personalNumber</path>
+                </source>
+                <condition>
+                    <script>
+                        <code>personalNumber != null</code>
+                    </script>
+                </condition>
+            </mapping>
+        </focus>
+    </autoassign>
+    <requestable>true</requestable>
+</role>

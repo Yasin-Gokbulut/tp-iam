@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype oid="e0000000-0000-0000-0000-000000000001"
+           xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Employé</name>
+    <description>Archétype des utilisateurs issus de la source RH (CSV).</description>
+    <archetypePolicy>
+        <display>
+            <label>Employé</label>
+            <pluralLabel>Employés</pluralLabel>
+            <icon>
+                <cssClass>fa fa-user</cssClass>
+                <color>green</color>
+            </icon>
+        </display>
+        <!-- Modèle d'objet appliqué à tous les utilisateurs portant cet archétype -->
+        <objectTemplateRef oid="e0000000-0000-0000-0000-000000000002"/>
+    </archetypePolicy>
+    <assignment>
+        <assignmentRelation>
+            <holderType>UserType</holderType>
+        </assignmentRelation>
+    </assignment>
+</archetype>

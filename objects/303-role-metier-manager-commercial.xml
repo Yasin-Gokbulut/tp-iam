@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<role oid="e3000000-0000-0000-0000-000000000003"
+      xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3">
+    <name>Manager commercial</name>
+    <description>Responsables commerciaux (code métier S006) : CRM en mode responsable.</description>
+    <!-- Archétype "Business role" (rôle métier) -->
+    <assignment>
+        <targetRef oid="00000000-0000-0000-0000-000000000321" type="ArchetypeType"/>
+    </assignment>
+    <!-- Droits portés par le rôle métier = rôles applicatifs induits -->
+    <inducement>
+        <targetRef oid="e2000000-0000-0000-0000-000000000002" type="RoleType"/>  <!-- Odoo - CRM : commercial -->
+    </inducement>
+    <inducement>
+        <targetRef oid="e2000000-0000-0000-0000-000000000003" type="RoleType"/>  <!-- Odoo - CRM : responsable -->
+    </inducement>
+    <!-- Règle ABAC : attribution / retrait automatique (jobCode = S006) -->
+    <autoassign>
+        <enabled>true</enabled>
+        <focus>
+            <selector>
+                <type>UserType</type>
+            </selector>
+            <mapping>
+                <name>auto-manager-commercial</name>
+                <strength>strong</strength>
+                <source>
+                    <path>extension/jobCode</path>
+                </source>
+                <condition>
+                    <script>
+                        <code>jobCode == 'S006'</code>
+                    </script>
+                </condition>
+            </mapping>
+        </focus>
+    </autoassign>
+    <requestable>true</requestable>
+</role>
