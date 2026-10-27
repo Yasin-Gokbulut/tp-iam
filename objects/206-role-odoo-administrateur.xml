@@ -19,8 +19,8 @@
                 <outbound>
                     <strength>strong</strength>
                     <expression>
-                        <value>__GID_SYSTEM__</value>  <!-- base.group_system -->
-                        <value>__GID_ERP_MANAGER__</value>  <!-- base.group_erp_manager -->
+                        <value>4</value>  <!-- base.group_system -->
+                        <value>2</value>  <!-- base.group_erp_manager -->
                     </expression>
                 </outbound>
             </attribute>

@@ -19,7 +19,7 @@
                 <outbound>
                     <strength>strong</strength>
                     <expression>
-                        <value>__GID_USER__</value>  <!-- base.group_user -->
+                        <value>1</value>  <!-- base.group_user -->
                     </expression>
                 </outbound>
             </attribute>

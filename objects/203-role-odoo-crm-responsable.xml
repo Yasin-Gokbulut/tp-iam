@@ -19,7 +19,7 @@
                 <outbound>
                     <strength>strong</strength>
                     <expression>
-                        <value>__GID_SALE_MANAGER__</value>  <!-- sales_team.group_sale_manager -->
+                        <value>23</value>  <!-- sales_team.group_sale_manager -->
                     </expression>
                 </outbound>
             </attribute>

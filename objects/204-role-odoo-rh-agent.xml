@@ -19,7 +19,7 @@
                 <outbound>
                     <strength>strong</strength>
                     <expression>
-                        <value>__GID_HR_USER__</value>  <!-- hr.group_hr_user -->
+                        <value>24</value>  <!-- hr.group_hr_user -->
                     </expression>
                 </outbound>
             </attribute>

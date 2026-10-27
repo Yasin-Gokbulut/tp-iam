@@ -19,7 +19,7 @@
                 <outbound>
                     <strength>strong</strength>
                     <expression>
-                        <value>__GID_ACCOUNT_INVOICE__</value>  <!-- account.group_account_invoice -->
+                        <value>28</value>  <!-- account.group_account_invoice -->
                     </expression>
                 </outbound>
             </attribute>
