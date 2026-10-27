@@ -1,0 +1,20 @@
+role,type,roles_induits
+Odoo - Administrateur,Role applicatif,
+Odoo - CRM : commercial,Role applicatif,
+Odoo - CRM : responsable,Role applicatif,
+Odoo - Facturation,Role applicatif,
+Odoo - Facturation : administrateur,Role applicatif,
+Odoo - RH : agent,Role applicatif,
+Odoo - Utilisateur interne,Role applicatif,
+Administrateur Odoo,Role metier,Odoo - Administrateur
+Agent commercial,Role metier,Odoo - CRM : commercial
+Comptable back-office,Role metier,Odoo - Facturation
+Direction,Role metier,Odoo - RH : agent
+Employé,Role metier,Odoo - Utilisateur interne
+Manager commercial,Role metier,Odoo - CRM : commercial | Odoo - CRM : responsable
+Responsable comptable,Role metier,Odoo - Facturation | Odoo - Facturation : administrateur
+Approver,Role systeme,
+Delegator,Role systeme,
+End user,Role systeme,
+Reviewer,Role systeme,
+Superuser,Role systeme,
